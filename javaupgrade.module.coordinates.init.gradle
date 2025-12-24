@@ -1,0 +1,32 @@
+allprojects {
+    task printAllModuleCoordinates {
+        doLast {
+            allprojects.each { proj ->
+                // Skip root project and gradle plugin projects
+                if (proj.name == 'android' || proj.name == 'gradle') {
+                    return
+                }
+                
+                // Auto-configure group and version from project properties or use defaults
+                def group = proj.group ?: proj.rootProject.group ?: 'org.csploit'
+                def version = proj.version ?: proj.rootProject.version ?: '1.0.0'
+                def projectPath = proj.projectDir?.absolutePath ?: 'undefined'
+                
+                // Get the module name (e.g., 'cSploit' from ':cSploit')
+                def moduleName = proj.name
+                
+                // Format: MODULE_COORD: :module_path|group|artifact_name|version|absolute_path
+                println "MODULE_COORD: " + proj.path + "|" + group + "|" + moduleName + "|" + version + "|" + projectPath
+            }
+        }
+    }
+    
+    // Auto-configure standard properties if not already set
+    if (!hasProperty('group')) {
+        group = 'org.csploit'
+    }
+    
+    if (!hasProperty('version')) {
+        version = '1.0.0'
+    }
+}
